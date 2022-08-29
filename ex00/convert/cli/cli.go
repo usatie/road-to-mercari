@@ -28,11 +28,13 @@ func (a *App) Run(args []string) int {
 	}
 	inExt := "." + arg.inExt
 	outExt := "." + arg.outExt
+	// verbose output (print args)
 	if arg.verbose {
-		fmt.Println(arg)
+		fmt.Fprintln(a.OutStream, arg)
 	}
 	var cnt int
 	err = filepath.Walk(arg.rootPath, func(path string, info os.FileInfo, err error) error {
+		// error handling
 		if err != nil {
 			return err
 		} else if info.IsDir() {
@@ -41,27 +43,50 @@ func (a *App) Run(args []string) int {
 			return errors.New(fmt.Sprintf("%s is not a valid file", path))
 		}
 
+		// output path
 		var outPath string
 		if arg.dir != "" {
 			outPath = getOutputPath(filepath.Join(arg.dir, filepath.Base(path)), inExt, outExt)
 		} else {
 			outPath = getOutputPath(path, inExt, outExt)
 		}
+
+		// verbose output (every conversion)
 		if arg.verbose {
-			fmt.Printf("%s ---> %s\n", path, outPath)
+			fmt.Fprintf(a.OutStream, "%s ---> %s\n", path, outPath)
 		}
-		err = convert(path, outPath, arg.decoder, arg.encoder)
+
+		// open input file
+		fin, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer fin.Close()
+
+		// create output file
+		fout, err := os.Create(outPath)
+		if err != nil {
+			return err
+		}
+		defer fout.Close()
+
+		// convert
+		err = convert(fin, fout, arg.decoder, arg.encoder)
 		if err == nil {
 			cnt++
 		}
 		return err
 	})
-	if arg.verbose {
-		fmt.Printf("\n\nconverted %d files\n", cnt)
-	}
+
+	// err output
 	if err != nil {
 		fmt.Fprintf(a.ErrStream, "error: %v\n", err)
 		return ExitCodeConvertError
+	}
+
+	// verbose output (completion)
+	if arg.verbose {
+		fmt.Fprintf(a.OutStream, "\n\nconverted %d files\n", cnt)
 	}
 
 	return ExitCodeOK
@@ -89,28 +114,14 @@ func getOutputPath(path, inExt, outExt string) string {
 }
 
 // converts input file format to output file format.
-func convert(inPath, outPath string, decoder Decoder, encoder Encoder) error {
-	// open input file
-	fin, err := os.Open(inPath)
-	if err != nil {
-		return err
-	}
-	defer fin.Close()
-
-	// create output file
-	fout, err := os.Create(outPath)
-	if err != nil {
-		return err
-	}
-	defer fout.Close()
-
+func convert(input io.Reader, output io.Writer, decoder Decoder, encoder Encoder) error {
 	// Decode
-	img, err := decoder.Decode(fin)
+	img, err := decoder.Decode(input)
 	if err != nil {
 		return err
 	}
 
 	// Encode
-	err = encoder.Encode(fout, img)
+	err = encoder.Encode(output, img)
 	return err
 }
