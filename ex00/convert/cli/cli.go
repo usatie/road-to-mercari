@@ -65,7 +65,7 @@ func parseFlags(errStream io.Writer, args []string) (inExt, outExt, rootPath str
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.SetOutput(errStream)
 	flags.Usage = func() {
-		fmt.Fprintf(errStream, "Usage: %s image_dir [options]\n", args[0])
+		fmt.Fprintf(errStream, "Usage: %s [options] image_dir\n", args[0])
 		fmt.Fprintln(errStream, "options:")
 		flags.PrintDefaults()
 	}
