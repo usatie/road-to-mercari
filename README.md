@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/usatie/convert.svg)](https://pkg.go.dev/github.com/usatie/convert)
+
 # Road to mercari
 Convert all JPG files in a directory (including the subdirectories) to PNG format.
 
