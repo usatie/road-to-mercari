@@ -1,8 +1,9 @@
 package main
 
 import (
-	"convert/cli"
 	"os"
+
+	"github.com/usatie/convert/cli"
 )
 
 func main() {
