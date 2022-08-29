@@ -32,7 +32,6 @@ func (a *App) Run(args []string) int {
 	}
 	inExt = "." + inExt
 	outExt = "." + outExt
-	fmt.Println("in: %s, out: %s", inExt, outExt)
 	err := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
