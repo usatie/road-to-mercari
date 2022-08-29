@@ -1,3 +1,4 @@
+// Package cli provides functionalities to convert images from some format to another.
 package cli
 
 import (
