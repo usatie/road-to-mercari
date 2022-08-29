@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"image"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -28,6 +29,10 @@ func newEncoder(ext string, quality int) (Encoder, error) {
 				options = &jpeg.Options{quality}
 			}
 			return jpeg.Encode(w, m, options)
+		}), nil
+	case "gif":
+		return EncoderFunc(func(w io.Writer, m image.Image) error {
+			return gif.Encode(w, m, nil)
 		}), nil
 	case "png":
 		return EncoderFunc(png.Encode), nil

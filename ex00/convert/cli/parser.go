@@ -25,8 +25,8 @@ func (c cliArgument) String() string {
 }
 
 const usageOptions = `options:
-  -i, --input <extension>    input file extension <png, jpeg, jpg>
-  -o, --output <extension>   output file extension <png, jpeg, jpg>
+  -i, --input <extension>    input file extension <png, jpeg, jpg, gif>
+  -o, --output <extension>   output file extension <png, jpeg, jpg, gif>
   -d, --dir <directory>      destination directory for output files
   -q, --quality <quality>    output encoding quality. higher is better. <1-100>
   -v, --verbose              verbose output`
@@ -42,11 +42,11 @@ func parseFlags(errStream io.Writer, args []string) (cliArgument, error) {
 		fmt.Fprintln(errStream, usageOptions)
 	}
 	// -i, --input
-	fs.StringVar(&arg.inExt, "i", "jpg", "input file extension <png, jpeg, jpg>")
-	fs.StringVar(&arg.inExt, "input", "jpg", "input file extension <png, jpeg, jpg>")
+	fs.StringVar(&arg.inExt, "i", "jpg", "input file extension <png, jpeg, jpg, gif>")
+	fs.StringVar(&arg.inExt, "input", "jpg", "input file extension <png, jpeg, jpg, gif>")
 	// -o, --output
-	fs.StringVar(&arg.outExt, "o", "png", "output file extension <png, jpeg, jpg>")
-	fs.StringVar(&arg.outExt, "output", "png", "output file extension <png, jpeg, jpg>")
+	fs.StringVar(&arg.outExt, "o", "png", "output file extension <png, jpeg, jpg, gif>")
+	fs.StringVar(&arg.outExt, "output", "png", "output file extension <png, jpeg, jpg, gif>")
 	// -d, --dir
 	fs.StringVar(&arg.dir, "d", "", "destination directory for output files")
 	fs.StringVar(&arg.dir, "dir", "", "destination directory for output files")

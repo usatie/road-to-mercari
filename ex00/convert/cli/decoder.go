@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"image"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -25,6 +26,8 @@ func newDecoder(ext string) (Decoder, error) {
 		return DecoderFunc(jpeg.Decode), nil
 	case "png":
 		return DecoderFunc(png.Decode), nil
+	case "gif":
+		return DecoderFunc(gif.Decode), nil
 	default:
 		return nil, errors.New("Invalid Extension")
 	}
