@@ -19,6 +19,7 @@ const (
 	ExitCodeConvertError   = 1
 )
 
+// App consists of output/error streams.
 type App struct {
 	OutStream, ErrStream io.Writer
 }
@@ -60,6 +61,7 @@ func (a *App) Run(args []string) int {
 	return ExitCodeOK
 }
 
+// parseFlags parse the arguments and writes errors to errStream
 func parseFlags(errStream io.Writer, args []string) (inExt, outExt, rootPath string, errCode int) {
 	flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
 	flags.SetOutput(errStream)
@@ -93,6 +95,7 @@ func parseFlags(errStream io.Writer, args []string) (inExt, outExt, rootPath str
 	return
 }
 
+// isValidExtension returns true if ext is available
 func isValidExtension(ext string) bool {
 	switch ext {
 	case ".jpg", ".jpeg", ".png":
@@ -102,6 +105,7 @@ func isValidExtension(ext string) bool {
 	}
 }
 
+// getNewFileName returns the output file name which does not overwrite existing files..
 func getNewFileName(baseName, outExt string) string {
 	filename := baseName + outExt
 	for n := 2; ; n++ {
@@ -120,6 +124,7 @@ func getNewFileName(baseName, outExt string) string {
 	return filename
 }
 
+// convert converts input file format to output file format.
 func convert(inFileName, outFileName string) error {
 	// open input file
 	fin, err := os.Open(inFileName)
