@@ -43,7 +43,7 @@ func (a *App) Run(args []string) int {
 
 		var outPath string
 		if arg.dir != "" {
-			outPath = getOutputPath(arg.dir+filepath.Base(path), inExt, outExt)
+			outPath = getOutputPath(filepath.Join(arg.dir, filepath.Base(path)), inExt, outExt)
 		} else {
 			outPath = getOutputPath(path, inExt, outExt)
 		}

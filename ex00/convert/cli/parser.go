@@ -25,11 +25,11 @@ func (c cliArgument) String() string {
 }
 
 const usageOptions = `options:
-  -i, --input	input file extension <png, jpeg, jpg>
-  -o, --output	output file extension <png, jpeg, jpg>
-  -d, --dir		directory to which output files
-  -q, --quality output encoding quality. higher is better. <1-100>
-  -v, --verbose verbose output`
+  -i, --input <extension>    input file extension <png, jpeg, jpg>
+  -o, --output <extension>   output file extension <png, jpeg, jpg>
+  -d, --dir <directory>      destination directory for output files
+  -q, --quality <quality>    output encoding quality. higher is better. <1-100>
+  -v, --verbose              verbose output`
 
 // parseFlags parse the arguments and writes errors to errStream
 func parseFlags(errStream io.Writer, args []string) (cliArgument, error) {
@@ -48,8 +48,8 @@ func parseFlags(errStream io.Writer, args []string) (cliArgument, error) {
 	fs.StringVar(&arg.outExt, "o", "png", "output file extension <png, jpeg, jpg>")
 	fs.StringVar(&arg.outExt, "output", "png", "output file extension <png, jpeg, jpg>")
 	// -d, --dir
-	fs.StringVar(&arg.dir, "d", "", "directory to which output files")
-	fs.StringVar(&arg.dir, "dir", "", "directory to which output files")
+	fs.StringVar(&arg.dir, "d", "", "destination directory for output files")
+	fs.StringVar(&arg.dir, "dir", "", "destination directory for output files")
 	// -q, --quality
 	fs.IntVar(&arg.quality, "q", 75, "output encoding quality. higher is better. <1-100>")
 	fs.IntVar(&arg.quality, "quality", 75, "output encoding quality. higher is better. <1-100>")
@@ -63,17 +63,30 @@ func parseFlags(errStream io.Writer, args []string) (cliArgument, error) {
 	// rootPath must be passed
 	arg.rootPath = fs.Arg(0)
 	if arg.rootPath == "" {
-		fmt.Fprintln(os.Stderr, "error: invalid argument")
+		fmt.Fprintln(errStream, "error: invalid argument")
 		return arg, errors.New("rootPath is empty")
 	}
 	// rootPath must exist
 	if _, err := os.Stat(arg.rootPath); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Fprintf(os.Stderr, "error: %s: no such file or directory\n", arg.rootPath)
+			fmt.Fprintf(errStream, "error: %s: no such file or directory\n", arg.rootPath)
 		} else {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			fmt.Fprintf(errStream, "error: %v\n", err)
 		}
 		return arg, err
+	}
+	// dir must be directory
+	if arg.dir != "" {
+		info, err := os.Stat(arg.dir)
+		if err != nil {
+			fmt.Fprintf(errStream, "error: %v\n", err)
+			return arg, err
+		}
+		if !info.IsDir() {
+			err = errors.New(fmt.Sprintf("%s is not a directory.", arg.dir))
+			fmt.Fprintf(errStream, "error: %v\n", err)
+			return arg, err
+		}
 	}
 	// Decoder
 	var err error
