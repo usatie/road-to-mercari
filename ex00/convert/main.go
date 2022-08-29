@@ -22,7 +22,7 @@ package main
 import (
 	"os"
 
-	"github.com/usatie/convert/cli"
+	"github.com/usatie/road-to-mercari/ex00/convert/cli"
 )
 
 // Convert images in a directory from some format to another.
